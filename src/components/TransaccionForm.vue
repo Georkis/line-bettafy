@@ -120,6 +120,12 @@ watch(() => props.transaccion, (val) => {
   }
 }, { immediate: true })
 
+watch(visible, (val) => {
+  if (val && !props.transaccion) {
+    form.value = initForm()
+  }
+})
+
 const bettasOptions = computed(() =>
   bettasStore.list.filter((b) => b.estado === 'activo').map((b) => ({
     label: `${b.codigo}${b.nombre ? ` - ${b.nombre}` : ''} (${b.sexo})`,
