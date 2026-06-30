@@ -17,25 +17,13 @@
         </q-card>
         <q-card flat bordered class="stat-card">
           <q-card-section class="text-center">
-            <div class="text-h3 text-green">{{ stats.totalAlevines }}</div>
-            <div class="text-subtitle2">Alevines</div>
-          </q-card-section>
-        </q-card>
-        <q-card flat bordered class="stat-card">
-          <q-card-section class="text-center">
-            <div class="text-h3 text-orange">{{ stats.machos }} / {{ stats.hembras }}</div>
-            <div class="text-subtitle2">Machos / Hembras</div>
-          </q-card-section>
-        </q-card>
-        <q-card flat bordered class="stat-card">
-          <q-card-section class="text-center">
-            <div class="text-h3 text-green">{{ stats.ingresosMes }}</div>
+            <div class="text-h3 text-green">{{ abbreviateMoney(stats.ingresosMes) }}</div>
             <div class="text-subtitle2">Ingresos</div>
           </q-card-section>
         </q-card>
         <q-card flat bordered class="stat-card">
           <q-card-section class="text-center">
-            <div class="text-h3 text-negative">{{ stats.gastosMes }}</div>
+            <div class="text-h3 text-negative">{{ abbreviateMoney(stats.gastosMes) }}</div>
             <div class="text-subtitle2">Gastos</div>
           </q-card-section>
         </q-card>
@@ -113,8 +101,15 @@ const finanzasStore = useFinanzasStore()
 
 const stats = ref(null)
 
-function formatMoney(n) {
-  return '$' + Number(n || 0).toLocaleString('es-CL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+function abbreviateMoney(n) {
+  const num = Number(n || 0)
+  if (num >= 1000000) {
+    return '$' + (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+  }
+  if (num >= 1000) {
+    return '$' + (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
+  }
+  return '$' + num
 }
 
 onMounted(async () => {
@@ -127,12 +122,9 @@ onMounted(async () => {
 
   stats.value = {
     bettasTotal: bettaStats.total,
-    machos: bettaStats.bySexo.find((s) => s.sexo === 'macho')?.count || 0,
-    hembras: bettaStats.bySexo.find((s) => s.sexo === 'hembra')?.count || 0,
     reproTotal: reproStats.total,
-    totalAlevines: reproStats.totalAlevines,
-    ingresosMes: formatMoney(finanzas.ingresos),
-    gastosMes: formatMoney(finanzas.gastos),
+    ingresosMes: finanzas.ingresos,
+    gastosMes: finanzas.gastos,
   }
 })
 
